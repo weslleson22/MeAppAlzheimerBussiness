@@ -1,8 +1,8 @@
-import { Feather } from "@expo/vector-icons";
+//import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 //import React from "react";
 import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollViewBase } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+//import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from 'react-native-svg';
 
 const UserImg = require('../../../../assets/idoso.png');
