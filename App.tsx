@@ -1,16 +1,15 @@
-import React, { useEffect, useCallback } from 'react';
-import * as Notifications from 'expo-notifications';
+import React, { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   useFonts,
   Jost_400Regular,
   Jost_600SemiBold
 } from '@expo-google-fonts/jost';
 
-import { TelaAlimentos } from './src/screens/AppAlimentosIa/TelaAlimentos';
+import Routes from './src/routes/stack.routes';  // Certifique-se de importar o arquivo correto
 
-SplashScreen.preventAutoHideAsync(); // Evita que a splash screen desapareça automaticamente
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,15 +19,17 @@ export default function App() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync(); // Esconde a splash screen quando as fontes são carregadas
+      SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return null; // Pode retornar nulo enquanto as fontes são carregadas
+    return null;
   }
 
   return (
-    <TelaAlimentos/>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Routes />
+    </GestureHandlerRootView>
   );
 }
