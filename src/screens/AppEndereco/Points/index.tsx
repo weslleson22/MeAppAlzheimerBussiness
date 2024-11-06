@@ -75,7 +75,7 @@ export function TelaPoints() {
   }, []);
 
   function handlerNavigateToDetail(id: number) {
-    navigation.navigate('TelaDetail', { points_id: id });
+    navigation.navigate('Detail', { points_id: id });
   }
 
   function handleSelectItem(id: number) {

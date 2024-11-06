@@ -52,12 +52,12 @@ export function TelaEndereco() {
   }
 
   function handleNavigateMap() {
-    navigate("TelaPoints", {
+    navigate("Points", {
       uf,
       city,
     });
   }
-
+  console.log(uf,city);
   function handleNavigateTelaPrincipal() {
     navigate("TelaPrincipal");
   }

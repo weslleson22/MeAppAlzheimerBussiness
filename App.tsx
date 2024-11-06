@@ -8,6 +8,7 @@ import {
 } from '@expo-google-fonts/jost';
 
 import Routes from './src/routes/stack.routes';  // Certifique-se de importar o arquivo correto
+import { Signin } from './src/screens/Fleet/Signin';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +30,11 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/*
       <Routes />
-    </GestureHandlerRootView>
+  */}
+      <Signin></Signin>
+
+      </GestureHandlerRootView>
   );
 }

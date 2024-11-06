@@ -13,6 +13,7 @@ import { MemoryGame } from '../screens/Gamers/Memory/MemoryGame';
 import { HomeSelect } from '../screens/AppTarefas/HomeSelect';
 import { TarefasSelect } from '../screens/AppTarefas/TarefasSelect';
 import { PlantSave } from '../screens/AppTarefas/PlantSave';
+import { ChartAlzheimerIA } from '../screens/ChartAlzheimer/ChartAlzheimerIA';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function Routes() {
         <Stack.Screen name="HomeSelect" component={HomeSelect} />
         <Stack.Screen name="PlantSave" component={PlantSave} />
         
+        <Stack.Screen name="ChartAlzheimerIA" component={ChartAlzheimerIA} />
 
       </Stack.Navigator>
     </NavigationContainer>
