@@ -17,7 +17,7 @@ import { TelaPoints } from '../screens/AppEndereco/Points';
 import TelaDetail from '../screens/AppEndereco/Detail';
 import { TelaAlimentos } from '../screens/AppAlimentosIa/TelaAlimentos';
 import { MemoryGame } from '../screens/Gamers/Memory/MemoryGame';
-import { ChartAlzheimerIA } from '../screens/ChartAlzheimer/ChartAlzheimerIA';
+import { MeusEndereco } from '../screens/Fleet/Signin/MeusEndereco';
 
 const stackRoutes = createStackNavigator();
 
@@ -87,11 +87,13 @@ const AppRoutes: React.FC = () => (
                 name='MemoryGame'
                 component={MemoryGame}
             />
-            
+
             <stackRoutes.Screen 
-                name='ChartAlzheimerIA'
-                component={ChartAlzheimerIA}
+                name='Fleet'
+                component={MeusEndereco}
             />
+            
+         
         </stackRoutes.Navigator>
     </NavigationContainer>
 );

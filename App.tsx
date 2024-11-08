@@ -6,9 +6,11 @@ import {
   Jost_400Regular,
   Jost_600SemiBold
 } from '@expo-google-fonts/jost';
+import {ThemeProvider} from "styled-components/native";
 
 import Routes from './src/routes/stack.routes';  // Certifique-se de importar o arquivo correto
-import { Signin } from './src/screens/Fleet/Signin';
+import theme from './src/screens/Fleet/theme';
+import { MeusEndereco } from './src/screens/Fleet/Signin/MeusEndereco';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,12 +31,14 @@ export default function App() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/*
       <Routes />
-  */}
-      <Signin></Signin>
+      */}
+      <MeusEndereco></MeusEndereco>
 
       </GestureHandlerRootView>
+      </ThemeProvider>
   );
 }
