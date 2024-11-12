@@ -11,6 +11,8 @@ import {ThemeProvider} from "styled-components/native";
 import Routes from './src/routes/stack.routes';  // Certifique-se de importar o arquivo correto
 import theme from './src/screens/Fleet/theme';
 import { MeusEndereco } from './src/screens/Fleet/Signin/MeusEndereco';
+import { HomeQuiz } from './src/screens/Gamers/Quiz/src/screens/Home';
+import { RoutesQuiz } from './src/screens/Gamers/Quiz/src/routes';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,10 +35,11 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
     <GestureHandlerRootView style={{ flex: 1 }}>
-      {/*
+  {/*
       <Routes />
-      */}
-      <MeusEndereco></MeusEndereco>
+  */}
+  <RoutesQuiz></RoutesQuiz>
+      
 
       </GestureHandlerRootView>
       </ThemeProvider>
