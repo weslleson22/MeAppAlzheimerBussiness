@@ -13,7 +13,10 @@ import { MemoryGame } from '../screens/Gamers/Memory/MemoryGame';
 import { HomeSelect } from '../screens/AppTarefas/HomeSelect';
 import { TarefasSelect } from '../screens/AppTarefas/TarefasSelect';
 import { PlantSave } from '../screens/AppTarefas/PlantSave';
-import { ChartAlzheimerIA } from '../screens/ChartAlzheimer/ChartAlzheimerIA';
+import { HomeQuiz } from '../screens/Gamers/Quiz/src/screens/Home';
+import { Quiz } from '../screens/Gamers/Quiz/src/screens/Quiz';
+import { History } from '../screens/Gamers/Quiz/src/screens/History';
+import { Finish } from '../screens/Gamers/Quiz/src/screens/Finish';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +38,12 @@ export default function Routes() {
         <Stack.Screen name="HomeSelect" component={HomeSelect} />
         <Stack.Screen name="PlantSave" component={PlantSave} />
         
-        <Stack.Screen name="ChartAlzheimerIA" component={ChartAlzheimerIA} />
+
+
+        <Stack.Screen name="home" component={HomeQuiz} />
+      <Stack.Screen name="quiz" component={Quiz} />
+      <Stack.Screen name="history" component={History} />
+      <Stack.Screen name="finish" component={Finish} />
 
       </Stack.Navigator>
     </NavigationContainer>

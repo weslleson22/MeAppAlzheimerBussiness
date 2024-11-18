@@ -42,6 +42,13 @@ export function TelaPrincipal() {
     navigate("MemoryGame");
   }
 
+
+  function handlerQuizGame() {
+    //navigation.
+    navigate("home");
+  }
+
+
   const [userName, setUserName] = useState<string>();
 
   useEffect(() => {
@@ -105,6 +112,11 @@ export function TelaPrincipal() {
             <Text style={styles.itemTitle}>Jogos</Text>
           </TouchableOpacity>
 
+          
+          <TouchableOpacity style={styles.item} onPress={handlerQuizGame}>
+            <SvgUri width={100} height={100} uri="https://raw.githubusercontent.com/weslleson22/ImagensAppAlzheimer/081fbe0988b8218e9fd49d127bf9dd971a52f96d/QuizApp.svg" />
+            <Text style={styles.itemTitle}>Quiz</Text>
+          </TouchableOpacity>
           </View>
    
         </ScrollView>

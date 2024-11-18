@@ -18,6 +18,10 @@ import TelaDetail from '../screens/AppEndereco/Detail';
 import { TelaAlimentos } from '../screens/AppAlimentosIa/TelaAlimentos';
 import { MemoryGame } from '../screens/Gamers/Memory/MemoryGame';
 import { MeusEndereco } from '../screens/Fleet/Signin/MeusEndereco';
+import { HomeQuiz } from '../screens/Gamers/Quiz/src/screens/Home';
+import { Quiz } from '../screens/Gamers/Quiz/src/screens/Quiz';
+import { History } from '../screens/Gamers/Quiz/src/screens/History';
+import { Finish } from '../screens/Gamers/Quiz/src/screens/Finish';
 
 const stackRoutes = createStackNavigator();
 
@@ -93,6 +97,23 @@ const AppRoutes: React.FC = () => (
                 component={MeusEndereco}
             />
             
+            <stackRoutes.Screen 
+            name="home" 
+            component={HomeQuiz} 
+            />
+            <stackRoutes.Screen 
+            name="quiz" 
+            component={Quiz} 
+            />
+            <stackRoutes.Screen 
+            name="history" 
+            component={History} 
+            />
+            <stackRoutes.Screen 
+            name="finish" 
+            component={Finish} 
+            />
+
          
         </stackRoutes.Navigator>
     </NavigationContainer>

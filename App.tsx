@@ -13,6 +13,7 @@ import theme from './src/screens/Fleet/theme';
 import { MeusEndereco } from './src/screens/Fleet/Signin/MeusEndereco';
 import { HomeQuiz } from './src/screens/Gamers/Quiz/src/screens/Home';
 import { RoutesQuiz } from './src/screens/Gamers/Quiz/src/routes';
+import { TelaQuiz } from './src/screens/Gamers/Quiz/TelaQuiz';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,8 +39,7 @@ export default function App() {
   {/*
       <Routes />
   */}
-  <RoutesQuiz></RoutesQuiz>
-      
+  <Routes/>
 
       </GestureHandlerRootView>
       </ThemeProvider>
