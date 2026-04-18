@@ -2,9 +2,6 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
-
-import {HomeSelect} from '../screens/AppTarefas/HomeSelect';
-import {MyPlants} from '../screens/AppTarefas/MyPlants';
 import colors from '../styles/colors';
 
 const AppTab = createBottomTabNavigator();
@@ -24,7 +21,7 @@ const AuthRoutes = () => {
         >
             <AppTab.Screen
                 name="Nova Planta"
-                component={HomeSelect}
+                getComponent={() => require('../screens/AppTarefas/HomeSelect').HomeSelect}
                 options={{
                     tabBarIcon: ({ size, color }) => (
                         <MaterialIcons
@@ -38,7 +35,7 @@ const AuthRoutes = () => {
             />
             <AppTab.Screen
                 name="Minhas Plantas"
-                component={MyPlants}
+                getComponent={() => require('../screens/AppTarefas/MyPlants').MyPlants}
                 options={{
                     tabBarIcon: ({ size, color }) => (
                         <MaterialIcons

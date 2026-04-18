@@ -13,10 +13,8 @@ import {
 
 const logoIgm = require ('../../../../assets/logo.png');
 import colors from "../../../styles/colors";
-import fonts from "../../../styles/fonts";
 
 export function WelcomeApp(){
-  const navigation = useNavigation();
   type Nav = {
     navigate: (value: string) => void;
   }
@@ -24,7 +22,11 @@ export function WelcomeApp(){
   const { navigate } = useNavigation<Nav>()
 
   function handleStart() {
-    navigate("UserIdentification");
+    try {
+      navigate("UserIdentification");
+    } catch (error) {
+      console.warn('Navigation is temporarily limited to the Welcome screen during startup isolation.', error);
+    }
   }
   return(
     <SafeAreaView style={styles.container}>

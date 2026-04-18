@@ -9,6 +9,13 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { api_IA } from "../../services/api_IA";
 import { Loading } from './components/Loading';
 import { foodContains } from './utils/foodContains';
+import {
+  EXPO_PUBLIC_API_APP_ID,
+  EXPO_PUBLIC_API_MODEL_ID,
+  EXPO_PUBLIC_API_MODEL_VERSION_ID,
+  EXPO_PUBLIC_API_USER_ID,
+} from '@env';
+
 export function TelaAlimentos() {
   const [selectedImageUri, setSelectedImageUri] = useState('');
   const [isLoading, setIsLoading] = useState(false)
@@ -28,6 +35,8 @@ export function TelaAlimentos() {
         return Alert.alert("É necessario conceder permissão para acessar sua galeria!")
       }
       setIsLoading(true)
+      setMessage('')
+      setItems([])
 
       const response = await ImgePicker.launchImageLibraryAsync({
         mediaTypes: ImgePicker.MediaTypeOptions.Images,
@@ -52,85 +61,83 @@ export function TelaAlimentos() {
           }
         )
         setSelectedImageUri(imgManipuled.uri)
-        foodDetect(imgManipuled.base64)
+        await foodDetect(imgManipuled.base64)
         console.log("Image ok")
 
       }
 
     } catch (error) {
-
       console.log(error)
+      setIsLoading(false)
     }
 
   }
 
   async function foodDetect(imageBase64: string | undefined) {
-    // console.log(imageBase64)
     try {
+      if (!imageBase64) {
+        throw new Error('Imagem invalida para analise.')
+      }
 
-      /**
-       * 
-  curl -X POST "https://api.clarifai.com/v2/users/clarifai/apps/main/models/general-image-recognition/versions/aa7f35c01e0642fda5cf400f543e7c40/outputs"   -H "Authorization: Key 57aac8716e5a456591426e42797f728f"   -H "Content-Type: application/json"   -d '{
-      "inputs": [
+      const response = await api_IA.post(
+        `/v2/users/clarifai/apps/main/models/${EXPO_PUBLIC_API_MODEL_ID}/versions/${EXPO_PUBLIC_API_MODEL_VERSION_ID}/outputs`,
         {
-          "data": {
-            "image": {
-              "url": "https://samples.clarifai.com/metro-north.jpg"
-            }
-          }
-        }
-      ]
-    }'
-       */
-      const response = await api_IA.post(`https://api.clarifai.com/v2/users/clarifai/apps/main/models/${process.env.EXPO_PUBLIC_API_MODEL_ID}/versions/${process.env.EXPO_PUBLIC_API_MODEL_VERSION_ID}/outputs`, {
-        "user_app_id": {
-          "user_id": process.env.EXPO_PUBLIC_API_USER_ID,
-
-
-        },
-        "inputs": [
-          {
-            "data": {
-              "image": {
-                "base64": imageBase64
+          "user_app_id": {
+            "user_id": EXPO_PUBLIC_API_USER_ID,
+            "app_id": EXPO_PUBLIC_API_APP_ID,
+          },
+          "inputs": [
+            {
+              "data": {
+                "image": {
+                  "base64": imageBase64
+                }
               }
             }
-          }
-        ]
-      })
+          ]
+        }
+      )
 
-      /* const concept = response.data.outputs[0].data.concepts.map((concept:any)=>{
-          return {
-            name: concept.name,
-            percentage: `${concept.value * 100} %`
-          }
-          
-        })*/
-      const foods = response.data.outputs[0].data.concepts.map((concept: any) => {
+      console.log('Clarifai success response:', JSON.stringify(response.data, null, 2))
+
+      const concepts = response.data?.outputs?.[0]?.data?.concepts
+
+      if (!Array.isArray(concepts) || concepts.length === 0) {
+        throw new Error('A API nao retornou alimentos para esta imagem.')
+      }
+
+      const foods = concepts.map((concept: any) => {
         return {
           name: concept.name,
           percentage: `${Math.round(concept.value * 100)}%`
         }
       })
-      const isVegetable = foodContains(foods, 'vegetable');
-      setMessage(isVegetable? '': 'Adicione vegetais em seu prato!');
-      setIsLoading(false)
-      setItems(foods);
+      const isVegetable = foodContains(foods, 'vegetable')
+      setMessage(isVegetable ? '' : 'Adicione vegetais em seu prato!')
+      setItems(foods)
       console.log("Tudo ok")
     } catch (error) {
+      const axiosError = error as {
+        response?: {
+          status?: number;
+          data?: unknown;
+        };
+        message?: string;
+      }
 
       console.log("Erro:", error)
+      console.log('Clarifai error status:', axiosError.response?.status)
+      console.log(
+        'Clarifai error response:',
+        JSON.stringify(axiosError.response?.data ?? { message: axiosError.message }, null, 2)
+      )
+      setMessage('Nao foi possivel analisar a imagem.')
+      setItems([])
+    } finally {
+      setIsLoading(false)
     }
-
-    /*/const isVegetable = foodContains(concept,'vegetable');
-    setMessage( isVegetable ? '' : 'Adiciona vegetais no seu prato!')
-
-    setItem(concept)
-    setIsLoading(false)*/
   }
-//Teste
-  //EXPO_PUBLIC_API_APP_ID=front_mealzheimer_app
-  //EXPO_PUBLIC_API_USER_ID=app123456789
+
   return (
     <View style={styles.container}>
       <Button onPress={handleSelectImage} disabled={isLoading} />
