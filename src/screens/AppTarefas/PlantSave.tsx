@@ -16,10 +16,26 @@ import {
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { SvgFromUri } from 'react-native-svg';
 const waterdrop = require ( '../../../assets/waterdrop.png');
- import { Button } from '../components/Button';
-import { loadPlant, PlantProps, savePlant } from '../../libs/storage';
+import { Button } from '../components/Button';
+import { useTasks } from '../../hooks/useTasks';
+import { notificationService } from '../../services/notificationService';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
+
+interface PlantProps {
+    id: string;
+    name: string;
+    about: string;
+    water_tips: string;
+    photo: string;
+    environments: [string];
+    frequency: {
+      times: number;
+      repeat_every: string;
+    };
+    hour: string;
+    dateTimeNotification: Date;
+}
 
 interface Params {
     plant: PlantProps;
@@ -27,6 +43,7 @@ interface Params {
 
 export function PlantSave() {
 
+    const { saveTask } = useTasks();
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS == 'ios');
    
@@ -40,14 +57,14 @@ export function PlantSave() {
 
     const { plant } = route.params as Params;
 
-    function handleChangeTime(event: Event, dateTime: Date | undefined){
+    function handleChangeTime(event: any, dateTime: Date | undefined){
         if(Platform.OS === 'android'){
             setShowDatePicker(oldState => !oldState);
         }
 
         if(dateTime && isBefore(dateTime, new Date())){
             setSelectedDateTime(new Date());
-            return Alert.alert('Escolha uma hora no futuro! ⏰');
+            return Alert.alert('Escolha uma hora no futuro! \u23f0');
         }
 
         if(dateTime)
@@ -58,25 +75,49 @@ export function PlantSave() {
         setShowDatePicker(oldState => !oldState);
     }
 
-    async function handleSave() { 
-        const data = await loadPlant();
-        console.log(data);       
+    async function handleSave() {       
         try {
-            await savePlant({
-                ...plant,
-                dateTimeNotification: selectedDateTime
-            })
+            // Criar tarefa usando o novo sistema
+            const taskData = {
+                title: plant.name,
+                description: plant.about,
+                completed: false,
+                priority: 'medium' as const,
+                category: plant.environments[0] || 'Geral',
+                dueDate: selectedDateTime,
+                reminderTime: selectedDateTime,
+            };
 
-            navigation.navigate('Confirmation', {
-                title: 'Tudo certo',
-                subtitle: 'Fique tranquilo que sempre vamos lembrar você das suas atividades com muito cuidar com muito cuidado.',
-                buttonTitle: 'Muito Obrigado :D',
-                icon: 'hug',
-                nextScreen: 'TelaPrincipal'
-            });
+            const savedTask = await saveTask(taskData);
+            
+            if (savedTask) {
+                // Agendar notificação
+                await notificationService.scheduleNotification({
+                    id: savedTask.id,
+                    title: '\ud83d\udc4b Lembrete de Tarefa',
+                    body: `Está na hora de: ${plant.name}`,
+                    data: { taskId: savedTask.id },
+                    trigger: {
+                        type: 'date' as const,
+                        date: selectedDateTime,
+                    },
+                });
+
+                navigation.navigate('Confirmation' as any, {
+                    title: 'Tudo certo',
+                    subtitle: 'Fique tranquilo que sempre vamos lembrar você das suas atividades com muito cuidado.',
+                    buttonTitle: 'Muito Obrigado :D',
+                    icon: 'hug',
+                    nextScreen: 'MyPlants',
+                    initialTab: 'Minhas Plantas'
+                });
+            } else {
+                Alert.alert('Não foi possível salvar. \ud83d\ude25');
+            }
 
         } catch(error) {
-            Alert.alert('Não foi possível salvar. 😥')
+            console.error('Erro ao salvar tarefa:', error);
+            Alert.alert('Não foi possível salvar. \ud83d\ude25');
         }
     }
 
@@ -135,7 +176,7 @@ export function PlantSave() {
                         )
                     }
                     <Button
-                        title='Cadastrar planta'
+                        title='Salvar tarefa'
                         onPress={handleSave}
                     />
                 </View>

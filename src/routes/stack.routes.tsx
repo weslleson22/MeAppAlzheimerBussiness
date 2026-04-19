@@ -89,6 +89,10 @@ const AppRoutes: React.FC = () => (
             name="finish" 
             getComponent={() => require('../screens/Gamers/Quiz/src/screens/Finish').Finish} 
         />
+        <stackRoutes.Screen 
+            name="Settings" 
+            getComponent={() => require('../screens/AppMenu/Settings/SettingsScreen').SettingsScreen} 
+        />
     </stackRoutes.Navigator>
 );
 

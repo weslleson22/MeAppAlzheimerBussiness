@@ -7,13 +7,13 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     TouchableWithoutFeedback,
     View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 //expo install @react-native-async-storage/async-storage > Usada para fazer o armazenamento local
 //KeyboardAvoidingVie é responsavel por não fazer o button sumir quando estiver digitando o text
 import { Button } from "../components/Button";
@@ -49,7 +49,7 @@ export function UserIdentification(){
             return Alert.alert('Não foi possível salvar o seu nome 😥');
         }
         
-        navigation.navigate('TelaPrincipal', {
+        (navigation.navigate as any)('TelaPrincipal', {
             title: 'Prontinho',
             subtitle: 'Agora vamos começar a cuidar das suas rotinas com muito cuidado.',
             buttonTitle: 'Começar',

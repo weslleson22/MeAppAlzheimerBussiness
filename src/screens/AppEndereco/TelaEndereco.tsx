@@ -22,6 +22,8 @@ export function TelaEndereco() {
   const [city, setCity] = useState("");
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [loadingStates, setLoadingStates] = useState(true);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   const { navigate } = useNavigation();
 
@@ -34,21 +36,37 @@ export function TelaEndereco() {
       const response = await axios.get(
         "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
       );
-      setStates(response.data);
+      setStates(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
     } catch (error) {
       console.error("Error fetching states:", error);
+    } finally {
+      setLoadingStates(false);
     }
   }
 
-  async function fetchCities(state) {
+  async function fetchCities(state: string) {
+    if (!state) {
+      setCities([]);
+      return;
+    }
+
     try {
+      setLoadingCities(true);
       const response = await axios.get(
         `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
       );
-      setCities(response.data);
+      setCities(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
     } catch (error) {
       console.error("Error fetching cities:", error);
+    } finally {
+      setLoadingCities(false);
     }
+  }
+
+  function handleSelectState(itemValue: string) {
+    setUf(itemValue);
+    setCity("");
+    fetchCities(itemValue);
   }
 
   function handleNavigateMap() {
@@ -57,7 +75,7 @@ export function TelaEndereco() {
       city,
     });
   }
-  console.log(uf,city);
+
   function handleNavigateTelaPrincipal() {
     navigate("TelaPrincipal");
   }
@@ -73,53 +91,63 @@ export function TelaEndereco() {
         </TouchableOpacity>
 
         <View style={styles.main}>
-        <Image source={require("../../../assets/destination-point.png")} />
-        <View>
-            <Text style={styles.title}>Localização das pessoas</Text>
-            <Text style={styles.description}>
-              Ajudamos pessoas a encontrarem suas localizações.
-            </Text>
-          </View>
+        <Image source={require("../../../assets/destination-point.png")} style={styles.heroImage} />
+        <View style={styles.textBlock}>
+          <Text style={styles.title}>Onde está sua família?</Text>
+          <Text style={styles.description}>
+            Informe o estado e a cidade para buscar a localização de pessoas próximas.
+          </Text>
         </View>
+      </View>
 
-        <View style={styles.footer}>
+      <View style={styles.footer}>
+        <Text style={styles.label}>Estado</Text>
+        <View style={styles.selectBox}>
           <Picker
-            style={styles.input}
+            style={styles.picker}
             selectedValue={uf}
-            onValueChange={(itemValue, itemIndex) => {
-              setUf(itemValue);
-              fetchCities(itemValue);
-            }}
+            onValueChange={(itemValue) => handleSelectState(itemValue)}
           >
             <Picker.Item label="Selecione o estado" value="" />
             {states.map((state) => (
               <Picker.Item
                 key={state.id}
-                label={state.nome}
+                label={`${state.sigla} — ${state.nome}`}
                 value={state.sigla}
               />
             ))}
           </Picker>
+        </View>
+
+        <Text style={styles.label}>Cidade</Text>
+        <View style={styles.selectBox}>
           <Picker
-            style={styles.input}
+            style={styles.picker}
             selectedValue={city}
+            enabled={!!uf && cities.length > 0}
             onValueChange={(itemValue) => setCity(itemValue)}
           >
-            <Picker.Item label="Selecione a cidade" value="" />
+            <Picker.Item
+              label={uf ? "Selecione a cidade" : "Escolha primeiro o estado"}
+              value=""
+            />
             {cities.map((city) => (
               <Picker.Item key={city.id} label={city.nome} value={city.nome} />
             ))}
           </Picker>
-
-          <RectButton style={styles.button} onPress={handleNavigateMap}>
-            <View style={styles.buttonIcon}>
-              <Text>
-                <Icon name="arrow-right" color={"#fff"} size={40} />
-              </Text>
-            </View>
-            <Text style={styles.buttonText}>Buscar</Text>
-          </RectButton>
         </View>
+
+        <RectButton
+          style={[styles.button, !(uf && city) && styles.buttonDisabled]}
+          onPress={handleNavigateMap}
+          enabled={!!uf && !!city}
+        >
+          <View style={styles.buttonIcon}>
+            <Icon name="arrow-right" color={"#fff"} size={32} />
+          </View>
+          <Text style={styles.buttonText}>Buscar</Text>
+        </RectButton>
+      </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -140,23 +168,59 @@ const styles = StyleSheet.create({
 
   title: {
     color: "#322153",
-    fontSize: 42,
+    fontSize: 34,
     fontFamily: fonts.heading,
-    maxWidth: 260,
-    marginTop: 64,
+    maxWidth: 280,
+    marginTop: 24,
   },
 
   description: {
     color: "#322153",
     fontSize: 16,
-    marginTop: 16,
+    marginTop: 12,
     fontFamily: fonts.heading,
-    maxWidth: 260,
+    maxWidth: 300,
     lineHeight: 24,
     textAlign: "center",
   },
 
-  footer: {},
+  textBlock: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+
+  heroImage: {
+    width: 140,
+    height: 140,
+    marginBottom: 16,
+  },
+
+  footer: {
+    paddingTop: 16,
+  },
+
+  label: {
+    fontSize: 14,
+    color: colors.blue,
+    fontFamily: fonts.heading,
+    marginBottom: 6,
+    marginLeft: 8,
+  },
+
+  selectBox: {
+    backgroundColor: "#F8F8F8",
+    borderRadius: 10,
+    marginBottom: 12,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E6E6E6",
+  },
+
+  picker: {
+    height: 60,
+    color: "#333",
+    paddingHorizontal: 12,
+  },
 
   input: {
     height: 60,
@@ -175,13 +239,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 16,
+  },
+
+  buttonDisabled: {
+    backgroundColor: colors.gray,
   },
 
   buttonIcon: {
     height: 60,
     width: 60,
-    backgroundColor: "rgba(0, 0, 0, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.12)",
     justifyContent: "center",
     alignItems: "center",
   },

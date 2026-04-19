@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 //import React from "react";
-import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollViewBase } from "react-native";
+import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from 'react-native-svg';
 //const logoIgm = require ("../../../assets/Tarefas.png");
@@ -9,63 +9,51 @@ import { Button } from "../components/Button";
 //const UserImg = require ('../../../assets/idoso.png');
 import colors from "../../styles/colors";
 import fonts from "../../styles/fonts";
-import AsyncStorange from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { ScrollView } from "react-native-gesture-handler";
+import { useUser } from '../../hooks/useUser';
 
 export function TarefasSelect(){
   const navigation = useNavigation();
+  const { user } = useUser();
   type Nav = {
-    navigate: (value: string) => void;
+    navigate: (value: string, params?: object) => void;
   }
 
   const { navigate } = useNavigation<Nav>()
 
-  function handlerPlants() {
-    //navigation.
+  function handlerHomeSelect() {
     navigate("HomeSelect");
   }
+
+  function handlerMyPlants() {
+    navigate("MyPlants", { initialTab: 'Minhas Plantas' });
+  }
+
   function handlerTarefas() {
-    //navigation.
     navigate("TarefasSelect");
   }
+
   function handlerEndereco() {
-    //navigation.
     navigate("TelaEndereco");
   }
-
-  function handlerAlimentoIA() {
-    //navigation.
-    navigate("TelaAlimentos");
-  }
-
-  const [userName, setUserName] = useState<string>();
-
-  useEffect(() => {
-    async function loadStorangeUsername() {
-      const user = await AsyncStorange.getItem('@plantmanager:user');
-
-      setUserName(user || '')
-    }
-
-    loadStorangeUsername();
-  }, [])
 
   return (
     <View style={styles.wapper}>
       <View style={styles.containerProdutor}>
         <Text style={styles.greeting}>Olá,</Text>
-        <Text style={styles.userName}>{userName} aqui você pode selecionar algumas das terefas disponivel no App</Text>
+        <Text style={styles.userName}>{user?.name || 'Visitante'}</Text>
+        <Text style={styles.description}>Aqui você pode acessar suas tarefas, agendar novos lembretes e ver as próximas atividades.</Text>
         <ScrollView style={styles.scrollVie} showsVerticalScrollIndicator={false}>
           <View style={styles.containerProdutor3}>
-            <TouchableOpacity style={styles.item} onPress={handlerPlants}>
+            <TouchableOpacity style={styles.item} onPress={handlerHomeSelect}>
               <SvgUri width={100} height={100} uri="https://raw.githubusercontent.com/weslleson22/ImagensAppAlzheimer/50a5484469b7eee26488960f24f3cd10b57a8329/Minhas%20Plantas.svg" />
-              <Text style={styles.itemTitle}>Minhas Plantas</Text>
+              <Text style={styles.itemTitle}>Nova tarefa</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.item} onPress={handlerPlants}>
+            <TouchableOpacity style={styles.item} onPress={handlerMyPlants}>
               <SvgUri width={100} height={100} uri="https://raw.githubusercontent.com/weslleson22/ImagensAppAlzheimer/f951321dff154ef51c358d81a8ecc9e0d7aa0aab/rotina-diaria.svg" />
-              <Text style={styles.itemTitle}>Rotinas Diarias</Text>
+              <Text style={styles.itemTitle}>Minhas tarefas</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -113,8 +101,14 @@ const styles = StyleSheet.create({
     fontFamily: fonts.heading,
     color: colors.blue,
     marginTop: 10,
-    justifyContent: "center",
-    alignItems: "center"
+  },
+  description: {
+    fontSize: 16,
+    fontFamily: fonts.text,
+    color: colors.blue,
+    marginTop: 12,
+    textAlign: 'center',
+    paddingHorizontal: 10,
   },
   scrollView: {
     maxHeight: 300, // Ajuste conforme necessário

@@ -1,4 +1,4 @@
-import { Check } from 'phosphor-react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 import { styles } from './styles';
@@ -15,9 +15,9 @@ export function ConfirmButton({ ...rest }: TouchableOpacityProps) {
         Confirmar
       </Text>
 
-      <Check
+      <MaterialIcons
+        name="check"
         color={THEME.COLORS.WHITE}
-        weight="bold"
         size={24}
       />
     </TouchableOpacity>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { Trophy } from 'phosphor-react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
 import { Level } from '../../components/Level';
@@ -9,6 +9,10 @@ import { QuizCard } from '../../components/QuizCard';
 
 import { styles } from './styles';
 import { QUIZZES } from '../../data/quizzes';
+
+const TrophyIcon = ({ size, color }: any) => (
+  <MaterialCommunityIcons name="trophy" size={size} color={color} />
+);
 
 export function HomeQuiz() {
   const [quizzes, setQuizzes] = useState(QUIZZES);
@@ -35,7 +39,7 @@ export function HomeQuiz() {
   return (
     <View style={styles.container}>
       <Header
-        icon={Trophy}
+        icon={TrophyIcon}
         title="Vamos treinar a memoria"
         subtitle="Treine seus conhecimento"
         onPress={() => navigate('history')}

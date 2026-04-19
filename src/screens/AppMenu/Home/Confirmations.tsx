@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/Button';
 import colors from '../../../styles/colors';
 import fonts from '../../../styles/fonts';

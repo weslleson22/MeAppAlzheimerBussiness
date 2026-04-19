@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { HouseLine } from 'phosphor-react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { Header } from '../../components/Header';
 import { HistoryCard, HistoryProps } from '../../components/HistoryCard';
@@ -9,6 +9,10 @@ import { HistoryCard, HistoryProps } from '../../components/HistoryCard';
 import { styles } from './styles';
 import { historyGetAll, historyRemove } from '../../storage/quizHistoryStorage';
 import { Loading } from '../../components/Loading';
+
+const HomeIcon = ({ size, color }: any) => (
+  <MaterialCommunityIcons name="home" size={size} color={color} />
+);
 
 export function History() {
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +59,7 @@ export function History() {
       <Header
         title="Histórico"
         subtitle={`Seu histórico de estudos${'\n'}realizados`}
-        icon={HouseLine}
+        icon={HomeIcon}
         onPress={goBack}
       />
 

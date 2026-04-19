@@ -6,9 +6,20 @@ import colors from '../styles/colors';
 
 const AppTab = createBottomTabNavigator();
 
-const AuthRoutes = () => {
+type TabRoutesProps = {
+    route: {
+        params?: {
+            initialTab?: string;
+        };
+    };
+};
+
+const AuthRoutes = ({ route }: TabRoutesProps) => {
+    const initialRouteName = route?.params?.initialTab || 'Nova Planta';
+
     return (
         <AppTab.Navigator
+            initialRouteName={initialRouteName}
             screenOptions={{
                 tabBarActiveTintColor: colors.blue,
                 tabBarInactiveTintColor: colors.blue,

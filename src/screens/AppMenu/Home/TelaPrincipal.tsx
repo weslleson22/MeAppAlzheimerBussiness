@@ -1,9 +1,10 @@
 //import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 //import React from "react";
-import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollViewBase } from "react-native";
+import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, Alert } from "react-native";
 //import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from 'react-native-svg';
+import * as ImagePicker from 'expo-image-picker';
 
 const UserImg = require('../../../../assets/idoso.png');
 import colors from "../../../styles/colors";
@@ -11,13 +12,9 @@ import fonts from "../../../styles/fonts";
 import AsyncStorange from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from "react-native-gesture-handler";
+import { useAppNavigation } from '../../../hooks/useNavigation';
 export function TelaPrincipal() {
-  const navigation = useNavigation();
-  type Nav = {
-    navigate: (value: string) => void;
-  }
-
-  const { navigate } = useNavigation<Nav>()
+  const { navigate } = useAppNavigation();
 
   function handlerPlants() {
     //navigation.
@@ -48,24 +45,67 @@ export function TelaPrincipal() {
     navigate("home");
   }
 
+  function handlerSettings() {
+    navigate("Settings");
+  }
 
   const [userName, setUserName] = useState<string>();
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadStorangeUsername() {
+    async function loadStorangeData() {
       const user = await AsyncStorange.getItem('@plantmanager:user');
+      const storedImage = await AsyncStorange.getItem('@plantmanager:userImage');
 
-      setUserName(user || '')
+      setUserName(user || '');
+      setUserImage(storedImage);
     }
 
-    loadStorangeUsername();
-  }, [])
+    loadStorangeData();
+  }, []);
+
+  async function pickImageFromGallery() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permissão necessária', 'Precisamos de acesso à galeria para alterar a imagem.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+
+    if (result.canceled) {
+      return;
+    }
+
+    const uri = result.assets?.[0]?.uri;
+    if (!uri) {
+      return;
+    }
+
+    setUserImage(uri);
+    await AsyncStorange.setItem('@plantmanager:userImage', uri);
+  }
+
   return (
     <View style={styles.wapper}>
       <View style={styles.containerProdutor}>
-
-        <Text style={styles.greeting}>Olá,</Text>
-        <Text style={styles.userName}>{userName}</Text>
+        <View style={styles.headerContainer}>
+          <View>
+            <Text style={styles.greeting}>Olá,</Text>
+            <Text style={styles.userName}>{userName}</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.settingsButton}
+            onPress={handlerSettings}
+          >
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
+        </View>
 
         <Image source={UserImg} style={styles.image2} />
      
@@ -245,16 +285,51 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   image2: {
-    marginTop: -100,
+    marginTop: 16,
     width: 120,
     height: 120,
-    marginLeft: 250,
     borderRadius: 60,
+  },
+  imageWrapper: {
+    alignSelf: 'flex-end',
+    marginRight: 0,
+    marginBottom: 16,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    paddingVertical: 6,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+    alignItems: 'center',
+  },
+  imageOverlayText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontFamily: fonts.heading,
   },
   scrollVie: {
     marginTop: 32,
     maxHeight: "100%", // Ajuste conforme necessário
     flex: 1,
     alignSelf: 'center'
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  settingsButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#F0F0F0',
+  },
+  settingsIcon: {
+    fontSize: 24,
   },
 });

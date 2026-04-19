@@ -2,14 +2,14 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
-  SafeAreaView,
   Text,
   Image,
   TouchableOpacity,
   StyleSheet,
   Dimensions,     
   View
-} from "react-native"; 
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; 
 
 const logoIgm = require ('../../../../assets/logo.png');
 import colors from "../../../styles/colors";

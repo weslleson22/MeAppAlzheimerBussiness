@@ -2,13 +2,12 @@ import { Text, View, TouchableOpacity } from 'react-native';
 
 import { styles } from './styles';
 import { THEME } from '../../styles/theme';
-import { IconProps } from 'phosphor-react-native';
 
 type Props = {
   title: string;
   subtitle: string;
   onPress: () => void;
-  icon: React.FC<IconProps>;
+  icon: React.ComponentType<any>;
 }
 
 export function Header({ title, subtitle, icon: Icon, onPress }: Props) {

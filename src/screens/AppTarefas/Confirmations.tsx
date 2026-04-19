@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -11,6 +12,7 @@ interface Params {
     buttonTitle: string;
     icon: 'smile' | 'hug',
     nextScreen: string;
+    initialTab?: string;
 }
 
 const emojis = {
@@ -21,7 +23,7 @@ const emojis = {
 export function Confirmation() {
     const navigation = useNavigation();
     type Nav = {
-        navigate: (value: string) => void;
+        navigate: (value: string, params?: object) => void;
       }
       
       const { navigate } = useNavigation<Nav>()
@@ -33,11 +35,15 @@ export function Confirmation() {
         buttonTitle,
         icon,
         nextScreen,
+        initialTab,
     } = routes.params as Params;
 
     function handleMoveOn() {
-      //  navigation.
-      navigate(nextScreen)
+      if (initialTab) {
+        navigate(nextScreen, { initialTab });
+      } else {
+        navigate(nextScreen);
+      }
     }
 
     return (
