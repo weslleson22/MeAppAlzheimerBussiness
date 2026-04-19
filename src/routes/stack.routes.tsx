@@ -86,13 +86,23 @@ const AppRoutes: React.FC = () => (
             getComponent={() => require('../screens/Gamers/Quiz/src/screens/History').History} 
         />
         <stackRoutes.Screen 
-            name="finish" 
-            getComponent={() => require('../screens/Gamers/Quiz/src/screens/Finish').Finish} 
-        />
-        <stackRoutes.Screen 
             name="Settings" 
             getComponent={() => require('../screens/AppMenu/Settings/SettingsScreen').SettingsScreen} 
         />
+        <stackRoutes.Screen 
+            name="finish" 
+            getComponent={() => require('../screens/Gamers/Quiz/src/screens/Finish').Finish} 
+        />
+
+        <stackRoutes.Screen 
+            name="dashboard" 
+            getComponent={() => require('../screens/AppMenu/Home/Dashboard').Dashboard} 
+        />
+        <stackRoutes.Screen 
+            name="AIAssistant" 
+            getComponent={() => require('../screens/AppMenu/AI/AIAssistantScreen').AIAssistantScreen} 
+        />
+
     </stackRoutes.Navigator>
 );
 

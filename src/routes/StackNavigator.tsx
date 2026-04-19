@@ -20,8 +20,10 @@ import { Quiz } from '../screens/Gamers/Quiz/src/screens/Quiz';
 import { History } from '../screens/Gamers/Quiz/src/screens/History';
 import { Finish } from '../screens/Gamers/Quiz/src/screens/Finish';
 import { UserSettings } from '../screens/Settings/UserSettings';
-import { ReportsScreen } from '../screens/AppMenu/Reports/ReportsScreen';
 import colors from '../styles/colors';
+import { ReportsScreen } from '../screens/AppMenu/Reports/ReportsScreen';
+import { Dashboard } from '../screens/AppMenu/Home/Dashboard';
+import { AIAssistantScreen } from '../screens/AppMenu/AI/AIAssistantScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -75,6 +77,7 @@ export default function Routes() {
         
         {/* Rotas principais */}
         <Stack.Screen name="WelcomeApp" component={WelcomeApp} />
+        <Stack.Screen name="Reports" component={ReportsScreen} />
         <Stack.Screen name="Settings" component={UserSettings} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
         <Stack.Screen name="TelaPrincipal" component={TelaPrincipal} />    
@@ -92,7 +95,8 @@ export default function Routes() {
         <Stack.Screen name="quiz" component={Quiz} />
         <Stack.Screen name="history" component={History} />
         <Stack.Screen name="finish" component={Finish} />
-        <Stack.Screen name="Reports" component={ReportsScreen} />
+        <Stack.Screen name="dashboard" component={Dashboard} />
+        <Stack.Screen name="AIAssistant" component={AIAssistantScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

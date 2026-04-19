@@ -22,6 +22,7 @@ export type RootStackParamList = {
   quiz: { quizId?: string };
   history: undefined;
   finish: { score?: number; totalQuestions?: number };
+  Reports: undefined;
 };
 
 export type RootStackNavigationProp = StackNavigationProp<RootStackParamList>;

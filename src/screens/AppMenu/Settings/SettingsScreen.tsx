@@ -139,7 +139,7 @@ export function SettingsScreen() {
       description: 'Gerenciar suas informações pessoais',
       icon: 'person-outline',
       type: 'navigation',
-      screen: 'ProfileSettings',
+      screen: 'Settings',
     },
     {
       id: 'notifications',
