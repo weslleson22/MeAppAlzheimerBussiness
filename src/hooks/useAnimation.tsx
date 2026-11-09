@@ -10,6 +10,7 @@ export function useAnimation() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
 
   /**
    * Animação de fade in
@@ -77,8 +78,6 @@ export function useAnimation() {
    * Animação de shake (tremida)
    */
   const shake = useCallback((intensity: number = 10, duration: number = 500) => {
-    const shakeAnim = useRef(new Animated.Value(0)).current;
-    
     return Animated.sequence([
       Animated.timing(shakeAnim, {
         toValue: intensity,
@@ -101,7 +100,7 @@ export function useAnimation() {
         useNativeDriver: true,
       }),
     ]);
-  }, []);
+  }, [shakeAnim]);
 
   /**
    * Animação de pulso
@@ -159,7 +158,8 @@ export function useAnimation() {
     scaleAnim.setValue(1);
     slideAnim.setValue(0);
     rotateAnim.setValue(0);
-  }, [fadeAnim, scaleAnim, slideAnim, rotateAnim]);
+    shakeAnim.setValue(0);
+  }, [fadeAnim, scaleAnim, slideAnim, rotateAnim, shakeAnim]);
 
   return {
     // Valores animados
@@ -167,6 +167,7 @@ export function useAnimation() {
     scaleAnim,
     slideAnim,
     rotateAnim,
+    shakeAnim,
     
     // Métodos de animação
     fadeIn,

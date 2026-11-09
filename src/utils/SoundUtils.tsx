@@ -1,12 +1,11 @@
+import { Vibration } from 'react-native';
+
 export class SoundUtils {
-  private static vibrationSupported = false;
+  private static vibrationSupported = true;
 
   static async initializeSounds() {
     try {
-      // Check if vibration is supported
-      if ('vibrate' in navigator) {
-        this.vibrationSupported = true;
-      }
+      this.vibrationSupported = true;
     } catch (error) {
       console.warn('Error initializing sounds:', error);
     }
@@ -32,7 +31,7 @@ export class SoundUtils {
 
   static async vibrate(pattern: number[]) {
     try {
-      // Use Expo's vibration API
+      Vibration.vibrate(pattern);
       await this.vibratePattern(pattern);
     } catch (error) {
       console.warn('Vibration not supported:', error);

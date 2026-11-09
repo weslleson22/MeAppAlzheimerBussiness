@@ -34,31 +34,31 @@ export function Quiz() {
 
   function handleSkipConfirm() {
     Alert.alert('Pular', 'Deseja realmente pular a questão?', [
-      { text: 'Sim', onPress: () => handleNextQuestion() },
+      { text: 'Sim', onPress: () => handleNextQuestion(points) },
       { text: 'Não', onPress: () => { } }
     ]);
   }
 
-  async function handleFinished() {
+  async function handleFinished(finalPoints: number = points) {
     await historyAdd({
       id: new Date().getTime().toString(),
       title: quiz.title,
       level: quiz.level,
-      points,
+      points: finalPoints,
       questions: quiz.questions.length
     });
 
     navigate('finish', {
-      points: String(points),
+      points: String(finalPoints),
       total: String(quiz.questions.length),
     });
   }
 
-  function handleNextQuestion() {
+  function handleNextQuestion(currentPoints: number = points) {
     if (currentQuestion < quiz.questions.length - 1) {
-      setCurrentQuestion(prevState => prevState + 1)
+      setCurrentQuestion(prevState => prevState + 1);
     } else {
-      handleFinished();
+      handleFinished(currentPoints);
     }
   }
 
@@ -67,11 +67,14 @@ export function Quiz() {
       return handleSkipConfirm();
     }
 
+    let nextPoints = points;
     if (quiz.questions[currentQuestion].correct === alternativeSelected) {
-      setPoints(prevState => prevState + 1);
+      nextPoints = points + 1;
+      setPoints(nextPoints);
     }
 
     setAlternativeSelected(null);
+    handleNextQuestion(nextPoints);
   }
 
   function handleStop() {
@@ -91,16 +94,10 @@ export function Quiz() {
   }
 
   useEffect(() => {
-    const quizSelected = QUIZ.filter(item => item.id === id)[0];
+    const quizSelected = QUIZ.filter(item => item.id === id)[0] || QUIZ[0];
     setQuiz(quizSelected);
     setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    if (quiz.questions) {
-      handleNextQuestion();
-    }
-  }, [points]);
+  }, [id]);
 
   if (isLoading) {
     return <Loading />

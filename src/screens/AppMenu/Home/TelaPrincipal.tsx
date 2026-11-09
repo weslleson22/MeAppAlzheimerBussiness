@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
-import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, Alert, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from 'react-native-svg';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -123,12 +124,10 @@ export function TelaPrincipal() {
   };
 
   useEffect(() => {
-    async function loadStorageData() {
-      const user = await AsyncStorage.getItem('@plantmanager:user');
-      setUserName(user || '');
+    if (user?.name) {
+      setUserName(user.name);
     }
-    loadStorageData();
-  }, []);
+  }, [user]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -208,7 +207,7 @@ export function TelaPrincipal() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Greeting Section */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greeting}>Olá, {userName || 'João'}!</Text>
+          <Text style={styles.greeting}>Olá, {user?.name || userName || 'Visitante'}!</Text>
           <Text style={styles.subGreeting}>O que vamos preparar hoje?</Text>
         </View>
 

@@ -49,7 +49,7 @@ export function Dashboard() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    bounce();
+    bounce().start();
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
@@ -77,7 +77,7 @@ export function Dashboard() {
       title: 'Jogos',
       description: 'Exercícios cognitivos',
       icon: 'game-controller-outline',
-      screen: 'GamersSelect',
+      screen: 'MemoryGame',
       color: colors.blue,
     },
     {
@@ -93,7 +93,7 @@ export function Dashboard() {
       title: 'Alimentação',
       description: 'Registro alimentar',
       icon: 'restaurant-outline',
-      screen: 'AppAlimentosIa',
+      screen: 'TelaAlimentos',
       color: colors.red,
     },
     {
@@ -115,7 +115,7 @@ export function Dashboard() {
   ];
 
   const handleQuickAction = (action: QuickAction) => {
-    bounce();
+    bounce().start();
     navigate(action.screen as any);
   };
 

@@ -1,6 +1,4 @@
-import { Jost_100Thin_Italic } from "@expo-google-fonts/jost";
-import { NavigationContainerRefContext, useNavigation } from "@react-navigation/native";
-
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { 
     Alert,
@@ -14,20 +12,20 @@ import {
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-//expo install @react-native-async-storage/async-storage > Usada para fazer o armazenamento local
-//KeyboardAvoidingVie é responsavel por não fazer o button sumir quando estiver digitando o text
 import { Button } from "../components/Button";
 import colors from "../../styles/colors";
 import fonts from "../../styles/fonts";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../hooks/useUser";
 
 export function UserIdentification(){
     const[isFocused, setIsFocused]=useState(false);
     const[isFilled, setIsFilled]=useState(false);
     const [name, setName] =useState<string>();
+    const { saveUser } = useUser();
+
     function handleInputBlur(){
         setIsFocused(false)
-        setIsFilled(!!name); // Se fica algum conteudo do nome vai continuia com a cor
+        setIsFilled(!!name);
     }
     function handleInputForcus(){
         setIsFocused(true)
@@ -40,13 +38,16 @@ export function UserIdentification(){
     const navigation =useNavigation();
    
     async function handleSumit(){
-        if(!name)
-        return Alert.alert('Me diz como chamar você🥺');
+        if(!name || !name.trim())
+            return Alert.alert('Nome obrigatório', 'Por favor, digite seu nome');
 
         try {
-            await AsyncStorage.setItem('@plantmanager:user', name);
+            const success = await saveUser({ name: name.trim() });
+            if (!success) {
+                return Alert.alert('Erro', 'Não foi possível salvar seu nome');
+            }
         } catch {
-            return Alert.alert('Não foi possível salvar o seu nome 😥');
+            return Alert.alert('Erro', 'Não foi possível salvar seu nome');
         }
         
         (navigation.navigate as any)('TelaPrincipal', {

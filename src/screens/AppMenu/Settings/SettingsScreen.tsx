@@ -139,7 +139,7 @@ export function SettingsScreen() {
       description: 'Gerenciar suas informações pessoais',
       icon: 'person-outline',
       type: 'navigation',
-      screen: 'Settings',
+      screen: 'UserSettings',
     },
     {
       id: 'notifications',
@@ -168,18 +168,22 @@ export function SettingsScreen() {
     {
       id: 'privacy',
       title: 'Privacidade',
-      description: 'Gerenciar seus dados e privacidade',
+      description: 'Seus dados são armazenados localmente no dispositivo',
       icon: 'lock-closed-outline',
-      type: 'navigation',
-      screen: 'PrivacySettings',
+      type: 'action',
+      action: () =>
+        Alert.alert(
+          'Privacidade',
+          'Todos os seus dados pessoais e métricas cognitivas ficam salvos apenas localmente no seu dispositivo.'
+        ),
     },
     {
       id: 'backup',
-      title: 'Backup e Restauração',
-      description: 'Gerenciar backup dos seus dados',
-      icon: 'cloud-upload-outline',
+      title: 'Relatórios e Atividades',
+      description: 'Visualizar relatórios e estatísticas',
+      icon: 'document-text-outline',
       type: 'navigation',
-      screen: 'BackupSettings',
+      screen: 'Reports',
     },
   ];
 
@@ -404,14 +408,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.shape,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.shape,
   },
   settingItem: {
     flexDirection: 'row',

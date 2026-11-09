@@ -165,7 +165,7 @@ export function HomeSelect() {
                         onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd)}
                         onEndReachedThreshold={0.1}
                         ListFooterComponent={
-                            loadingMore ? <ActivityIndicator color={colors.blue} /> : null
+                            loadingMore ? <ActivityIndicator color={colors.blue} /> : undefined
                         }
                     />
                 </View>

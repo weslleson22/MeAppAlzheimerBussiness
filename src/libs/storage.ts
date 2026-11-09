@@ -44,7 +44,11 @@ export async function savePlant(plant: PlantProps) : Promise<void> {
             },
         });
 
-        if (!permission.granted) {
+        const isGranted =
+            (permission as any).granted === true ||
+            (permission as any).status === 'granted';
+
+        if (!isGranted) {
             throw new Error('Permissão de notificações negada.');
         }
 

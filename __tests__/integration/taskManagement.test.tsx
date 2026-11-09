@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Task } from '../../src/hooks/useTasks';
@@ -58,23 +59,23 @@ describe('Integração: Gerenciamento de Tarefas', () => {
       };
 
       return (
-        <>
-          <input
+        <View>
+          <TextInput
             testID="task-title"
             value={title}
             onChangeText={setTitle}
             placeholder="Título da tarefa"
           />
-          <input
+          <TextInput
             testID="task-description"
             value={description}
             onChangeText={setDescription}
             placeholder="Descrição da tarefa"
           />
-          <button testID="create-task" onPress={handleCreateTask}>
-            Criar Tarefa
-          </button>
-        </>
+          <TouchableOpacity testID="create-task" onPress={handleCreateTask}>
+            <Text>Criar Tarefa</Text>
+          </TouchableOpacity>
+        </View>
       );
     };
 
@@ -148,16 +149,16 @@ describe('Integração: Gerenciamento de Tarefas', () => {
       }, []);
 
       return (
-        <div testID="task-list">
+        <View testID="task-list">
           {tasks.map(task => (
-            <div key={task.id} testID={`task-${task.id}`}>
-              <span testID={`task-title-${task.id}`}>{task.title}</span>
-              <span testID={`task-completed-${task.id}`}>
+            <View key={task.id} testID={`task-${task.id}`}>
+              <Text testID={`task-title-${task.id}`}>{task.title}</Text>
+              <Text testID={`task-completed-${task.id}`}>
                 {task.completed ? 'Concluída' : 'Pendente'}
-              </span>
-            </div>
+              </Text>
+            </View>
           ))}
-        </div>
+        </View>
       );
     };
 
@@ -207,15 +208,15 @@ describe('Integração: Gerenciamento de Tarefas', () => {
       };
 
       return (
-        <div testID="task-item">
-          <span testID="task-title">{task.title}</span>
-          <button testID="toggle-complete" onPress={handleToggleComplete}>
-            {isCompleted ? 'Desmarcar' : 'Concluir'}
-          </button>
-          <span testID="task-status">
+        <View testID="task-item">
+          <Text testID="task-title">{task.title}</Text>
+          <TouchableOpacity testID="toggle-complete" onPress={handleToggleComplete}>
+            <Text>{isCompleted ? 'Desmarcar' : 'Concluir'}</Text>
+          </TouchableOpacity>
+          <Text testID="task-status">
             {isCompleted ? 'Concluída' : 'Pendente'}
-          </span>
-        </div>
+          </Text>
+        </View>
       );
     };
 
@@ -267,12 +268,12 @@ describe('Integração: Gerenciamento de Tarefas', () => {
       };
 
       return (
-        <div testID="task-item">
-          <span testID="task-title">{task.title}</span>
-          <button testID="remove-task" onPress={handleRemove}>
-            Remover
-          </button>
-        </div>
+        <View testID="task-item">
+          <Text testID="task-title">{task.title}</Text>
+          <TouchableOpacity testID="remove-task" onPress={handleRemove}>
+            <Text>Remover</Text>
+          </TouchableOpacity>
+        </View>
       );
     };
 
@@ -311,12 +312,12 @@ describe('Integração: Gerenciamento de Tarefas', () => {
       };
 
       return (
-        <>
-          <button testID="create-task" onPress={handleCreateTask}>
-            Criar Tarefa
-          </button>
-          {error && <span testID="error-message">{error}</span>}
-        </>
+        <View>
+          <TouchableOpacity testID="create-task" onPress={handleCreateTask}>
+            <Text>Criar Tarefa</Text>
+          </TouchableOpacity>
+          {error && <Text testID="error-message">{error}</Text>}
+        </View>
       );
     };
 

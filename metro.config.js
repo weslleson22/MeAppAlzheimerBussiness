@@ -18,19 +18,13 @@ config.fileMapCacheSize = 300;
 // CRITICAL: Block phosphor-react-native icon directories
 const projectRoot = __dirname;
 
-// Custom getBlacklistRE to exclude phosphor heavy folders
-config.project = {
-  ...config.project,
-  disableCache: true,
-};
-
 // Update resolver to exclude phosphor folders
 config.resolver = {
   ...config.resolver,
   blockList: [
     /node_modules\/phosphor-react-native\/src\/(bold|duotone|fill|light|regular|thin)\//,
   ],
-  sourceExts: ['jsx', 'js', 'json', 'ts', 'tsx', 'cjs'],
+  sourceExts: Array.from(new Set([...(config.resolver.sourceExts || []), 'jsx', 'js', 'json', 'ts', 'tsx', 'cjs', 'mjs'])),
   assetExts: config.resolver.assetExts,
 };
 

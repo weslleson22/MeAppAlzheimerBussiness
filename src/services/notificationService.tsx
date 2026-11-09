@@ -38,7 +38,7 @@ export class NotificationService {
    */
   async requestPermissions(): Promise<boolean> {
     try {
-      const { status } = await Notifications.requestPermissionsAsync({
+      const permission = await Notifications.requestPermissionsAsync({
         ios: {
           allowAlert: true,
           allowBadge: true,
@@ -46,7 +46,11 @@ export class NotificationService {
         },
       });
 
-      if (status === 'granted') {
+      const isGranted =
+        (permission as any).granted === true ||
+        (permission as any).status === 'granted';
+
+      if (isGranted) {
         console.log('Permissões de notificação concedidas');
         return true;
       } else {
@@ -69,6 +73,20 @@ export class NotificationService {
         return null;
       }
 
+      let trigger: any = null;
+      if (notification.trigger !== undefined) {
+        trigger = notification.trigger;
+      } else if (notification.scheduledTime) {
+        const seconds = Math.max(
+          1,
+          Math.floor((notification.scheduledTime.getTime() - Date.now()) / 1000)
+        );
+        trigger = {
+          type: 'timeInterval' as any,
+          seconds,
+        };
+      }
+
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title: notification.title,
@@ -77,10 +95,7 @@ export class NotificationService {
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
         },
-        trigger: notification.scheduledTime ? {
-          type: 'timeInterval' as any,
-          seconds: Math.floor((notification.scheduledTime.getTime() - Date.now()) / 1000)
-        } : null,
+        trigger,
       });
 
       // Salva notificação agendada no storage

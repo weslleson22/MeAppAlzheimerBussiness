@@ -1,8 +1,9 @@
-import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { Alert } from 'react-native';
-import { useUser } from '../hooks/useUser';
-import { useTasks } from '../hooks/useTasks';
+import { Alert, Share } from 'react-native';
+import { Task } from '../hooks/useTasks';
+import { getMemoryGameStats } from '../libs/storage';
 
 export interface ReportData {
   userName: string;
@@ -22,57 +23,133 @@ export interface ReportData {
 export class PDFService {
   static async generateTaskReport(): Promise<void> {
     try {
-      // Simular geração de PDF (em um app real, usaria biblioteca como react-native-pdf)
       const reportData = await this.collectReportData();
-      
-      // Criar conteúdo do relatório em formato de texto
       const pdfContent = this.generatePDFContent(reportData);
-      
-      // Simular salvamento (em app real, usaria biblioteca de PDF)
-      console.log('Gerando relatório...');
-      console.log(pdfContent);
-      
-      // Simular compartilhamento
-      Alert.alert('Relatório Gerado', 'Relatório foi gerado com sucesso! (Em produção, seria compartilhado como PDF)');
+      const htmlContent = this.generateTaskHTML(reportData);
+
+      try {
+        const { uri } = await Print.printToFileAsync({ html: htmlContent });
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Relatório de Tarefas - MeApp Alzheimer',
+          });
+          return;
+        }
+      } catch {
+        // Fallback para compartilhamento de texto
+      }
+
+      try {
+        await Share.share({
+          title: 'Relatório de Tarefas - MeApp Alzheimer',
+          message: pdfContent,
+        });
+      } catch {
+        Alert.alert('Relatório Gerado', pdfContent);
+      }
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       Alert.alert('Erro', 'Não foi possível gerar o relatório. Tente novamente.');
     }
   }
 
+  private static async getStoredUserName(): Promise<string> {
+    try {
+      const storedUser = await AsyncStorage.getItem('@plantmanager:user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          return parsed.name || storedUser;
+        } catch {
+          return storedUser;
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return 'Usuário';
+  }
+
   private static async collectReportData(): Promise<ReportData> {
-    // Simular coleta de dados (em um app real, buscaria dos hooks)
+    const userName = await this.getStoredUserName();
+
+    let tasks: Task[] = [];
+    try {
+      const storedTasks = await AsyncStorage.getItem('@plantmanager:tasks');
+      if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+      }
+    } catch {
+      tasks = [];
+    }
+
+    const totalTasks = tasks.length;
+    const tasksCompleted = tasks.filter(t => t.completed).length;
+    const tasksPending = totalTasks - tasksCompleted;
+    const completionRate = totalTasks > 0 ? Math.round((tasksCompleted / totalTasks) * 100) : 0;
+
+    const tasksByCategory: Record<string, number> = {};
+    tasks.forEach(t => {
+      const cat = t.category || 'Geral';
+      tasksByCategory[cat] = (tasksByCategory[cat] || 0) + 1;
+    });
+
+    const recentActivities = tasks.slice(-5).map(t => ({
+      title: t.title,
+      completed: t.completed,
+      createdAt: new Date(t.createdAt),
+    }));
+
     return {
-      userName: 'Usuário Teste',
+      userName,
       reportDate: new Date(),
-      tasksCompleted: 15,
-      tasksPending: 5,
-      totalTasks: 20,
-      completionRate: 75,
-      tasksByCategory: {
-        'Trabalho': 8,
-        'Pessoal': 6,
-        'Saúde': 4,
-        'Outros': 2,
-      },
-      recentActivities: [
-        {
-          title: 'Reunião de equipe',
-          completed: true,
-          createdAt: new Date(Date.now() - 86400000), // 1 dia atrás
-        },
-        {
-          title: 'Consulta médica',
-          completed: true,
-          createdAt: new Date(Date.now() - 172800000), // 2 dias atrás
-        },
-        {
-          title: 'Comprar medicamentos',
-          completed: false,
-          createdAt: new Date(Date.now() - 259200000), // 3 dias atrás
-        },
-      ],
+      tasksCompleted,
+      tasksPending,
+      totalTasks,
+      completionRate,
+      tasksByCategory: Object.keys(tasksByCategory).length > 0 ? tasksByCategory : { Geral: 0 },
+      recentActivities,
     };
+  }
+
+  private static generateTaskHTML(data: ReportData): string {
+    const categoriesRows = Object.entries(data.tasksByCategory)
+      .map(([cat, count]) => `<li><strong>${cat}:</strong> ${count}</li>`)
+      .join('');
+    const activitiesRows = data.recentActivities
+      .map(a => `<li>${a.createdAt.toLocaleDateString('pt-BR')} - ${a.title} (${a.completed ? '✅ Concluída' : '⏳ Pendente'})</li>`)
+      .join('');
+
+    return `
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <style>
+            body { font-family: Arial, sans-serif; padding: 24px; color: #333; }
+            h1 { color: #32B768; }
+            .card { background: #f5f8f6; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+          </style>
+        </head>
+        <body>
+          <h1>Relatório de Tarefas — MeApp Alzheimer</h1>
+          <p><strong>Paciente/Usuário:</strong> ${data.userName}</p>
+          <p><strong>Data:</strong> ${data.reportDate.toLocaleDateString('pt-BR')}</p>
+          <div class="card">
+            <h3>Resumo Geral</h3>
+            <p>Total de Tarefas: ${data.totalTasks}</p>
+            <p>Tarefas Concluídas: ${data.tasksCompleted}</p>
+            <p>Tarefas Pendentes: ${data.tasksPending}</p>
+            <p>Taxa de Conclusão: ${data.completionRate}%</p>
+          </div>
+          <h3>Tarefas por Categoria</h3>
+          <ul>${categoriesRows}</ul>
+          <h3>Atividades Recentes</h3>
+          <ul>${activitiesRows || '<li>Nenhuma atividade recente</li>'}</ul>
+        </body>
+      </html>
+    `;
   }
 
   private static generatePDFContent(data: ReportData): string {
@@ -126,12 +203,15 @@ Desenvolvido para auxiliar pacientes com Alzheimer
     try {
       const healthData = await this.collectHealthData();
       const pdfContent = this.generateHealthPDFContent(healthData);
-      
-      // Simular salvamento (em app real, usaria biblioteca de PDF)
-      console.log('Gerando relatório de saúde...');
-      console.log(pdfContent);
-      
-      Alert.alert('Relatório de Saúde', 'Relatório de saúde gerado com sucesso! (Em produção, seria salvo como PDF)');
+
+      try {
+        await Share.share({
+          title: 'Relatório de Saúde e Cognição - MeApp Alzheimer',
+          message: pdfContent,
+        });
+      } catch {
+        Alert.alert('Relatório de Saúde', pdfContent);
+      }
     } catch (error) {
       console.error('Erro ao gerar relatório de saúde:', error);
       Alert.alert('Erro', 'Não foi possível gerar o relatório de saúde.');
@@ -139,15 +219,25 @@ Desenvolvido para auxiliar pacientes com Alzheimer
   }
 
   private static async collectHealthData() {
+    const userName = await this.getStoredUserName();
+    let memorySessions = 0;
+    try {
+      const stats = await getMemoryGameStats();
+      memorySessions = stats.totalGames;
+    } catch {
+      memorySessions = 0;
+    }
+
     return {
-      userName: 'Usuário Teste',
+      userName,
       reportDate: new Date(),
+      memorySessions,
       mealsAnalyzed: 45,
       vegetablesDetected: 32,
       healthyMealsPercentage: 71,
       recommendations: [
-        'Ótima ingestão de vegetais nas refeições',
-        'Considere adicionar mais frutas ao café da manhã',
+        'Mantenha a ingestão regular de vegetais e folhas verdes nas refeições',
+        'Continue praticando os exercícios cognitivos (Jogo da Memória e Quiz) diariamente',
         'Mantenha a hidratação adequada durante o dia',
       ],
     };
@@ -156,14 +246,15 @@ Desenvolvido para auxiliar pacientes com Alzheimer
   private static generateHealthPDFContent(data: any): string {
     return `
 ====================================
-RELATÓRIO DE SAÚDE E NUTRIÇÃO
+RELATÓRIO DE SAÚDE E COGNIÇÃO
 ====================================
 
 Nome do Usuário: ${data.userName}
 Data do Relatório: ${data.reportDate.toLocaleDateString('pt-BR')}
 
-ANÁLISE DE REFEIÇÕES
+ESTIMULAÇÃO COGNITIVA & NUTRIÇÃO
 ------------------------------------
+Sessões no Jogo da Memória: ${data.memorySessions}
 Refeições Analisadas: ${data.mealsAnalyzed}
 Refeições com Vegetais: ${data.vegetablesDetected}
 Percentual de Refeições Saudáveis: ${data.healthyMealsPercentage}%

@@ -19,7 +19,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sw_development.MeAppAlzheimerBussiness"
+      "package": "com.sw_development.MeAppAlzheimerBussiness",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,6 +32,9 @@
       "eas": {
         "projectId": "bd0861d7-b8a3-496c-ad21-ad3781b53469"
       }
-    }
+    },
+    "plugins": [
+      "./plugins/withAndroidCleartextTraffic"
+    ]
   }
 }

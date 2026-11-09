@@ -13,20 +13,36 @@ export interface User {
   phone?: string;
 }
 
+type UserListener = (user: User | null) => void;
+const listeners = new Set<UserListener>();
+
+function notifyUserListeners(nextUser: User | null) {
+  listeners.forEach(listener => listener(nextUser));
+}
+
 /**
  * Hook personalizado para gerenciamento de usuário
  * Centraliza a lógica de armazenamento e recuperação de dados do usuário
  */
-export function useUser() {
+export function useStandaloneUser() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   /**
-   * Carrega os dados do usuário do AsyncStorage
+   * Carrega os dados do usuário do AsyncStorage e sincroniza entre telas
    */
   useEffect(() => {
     loadUserData();
+
+    const listener: UserListener = (nextUser) => {
+      setUser(nextUser);
+      setIsAuthenticated(Boolean(nextUser));
+    };
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   }, []);
 
   /**
@@ -68,14 +84,15 @@ export function useUser() {
    */
   const saveUser = async (userData: User) => {
     try {
-      await AsyncStorage.setItem('@plantmanager:user', JSON.stringify(userData));
-      const userToSave = {
+      const userToSave: User = {
         ...userData,
         id: userData.id || 'user_' + Date.now(),
         createdAt: userData.createdAt || new Date(),
       };
+      await AsyncStorage.setItem('@plantmanager:user', JSON.stringify(userToSave));
       setUser(userToSave);
       setIsAuthenticated(true);
+      notifyUserListeners(userToSave);
       return true;
     } catch (error) {
       console.error('Erro ao salvar dados do usuário:', error);
@@ -91,6 +108,7 @@ export function useUser() {
       await AsyncStorage.removeItem('@plantmanager:user');
       setUser(null);
       setIsAuthenticated(false);
+      notifyUserListeners(null);
       return true;
     } catch (error) {
       console.error('Erro ao remover dados do usuário:', error);
@@ -140,3 +158,5 @@ export function useUser() {
     refreshUser: loadUserData,
   };
 }
+
+export const useUser = useStandaloneUser;

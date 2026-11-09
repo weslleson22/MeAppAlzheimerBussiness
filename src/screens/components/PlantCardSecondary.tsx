@@ -6,7 +6,7 @@ import {
     Animated 
 } from 'react-native';
 import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SvgFromUri } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
 

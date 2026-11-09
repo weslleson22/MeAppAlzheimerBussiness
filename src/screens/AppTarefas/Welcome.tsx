@@ -6,14 +6,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 /*expo install @expo/vector-icons
 Depencia para fazer uso dos Icons 
 */
-import {SafeAreaView,
+import {
      Text,
      Image,
      TouchableOpacity,
      StyleSheet,
     Dimensions,     
     View
-    } from "react-native"; 
+    } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context"; 
 //TouchableOpacity esse ele faz um feito de opacidade quando ele eh precionado.
 const logoIgm = require ('../../../assets/logo.png');
 

@@ -31,8 +31,12 @@ export function UserIdentification() {
   const [name, setName] = useState<string>('');
   
   const { saveUser } = useUser();
-  const { fadeAnim, scaleAnim, bounce } = useAnimation();
-  const { goToWelcome } = useAppNavigation();
+  const { fadeAnim, scaleAnim, fadeIn, bounce } = useAnimation();
+  const { navigate } = useAppNavigation();
+
+  React.useEffect(() => {
+    fadeIn(600).start();
+  }, [fadeIn]);
 
   /**
    * Manipula o blur do input
@@ -47,7 +51,7 @@ export function UserIdentification() {
    */
   const handleInputFocus = () => {
     setIsFocused(true);
-    bounce();
+    bounce().start();
   };
 
   /**
@@ -62,18 +66,18 @@ export function UserIdentification() {
    * Manipula o envio do formulário
    */
   const handleSubmit = async () => {
-    if (!name) {
+    if (!name || !name.trim()) {
       return Alert.alert('Me diz como chamar você🥺');
     }
 
     try {
-      const success = await saveUser({ name });
+      const success = await saveUser({ name: name.trim() });
       
       if (success) {
         // Animação de sucesso e navegação
-        bounce();
+        bounce().start();
         setTimeout(() => {
-          goToWelcome();
+          navigate('TelaPrincipal');
         }, 500);
       } else {
         Alert.alert('Não foi possível salvar o seu nome 😥');

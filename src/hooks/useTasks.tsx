@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { notificationService } from '../services/notificationService';
 
 /**
  * Interface para dados da tarefa
@@ -72,6 +73,19 @@ export function useTasks() {
       const updatedTasks = [...tasks, newTask];
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
       setTasks(updatedTasks);
+
+      if (newTask.dueDate && new Date(newTask.dueDate).getTime() > Date.now()) {
+        await notificationService.scheduleNotification({
+          id: newTask.id,
+          title: '👋 Lembrete de Tarefa',
+          body: `Está na hora de: ${newTask.title}`,
+          data: { taskId: newTask.id },
+          trigger: {
+            type: 'date' as const,
+            date: newTask.dueDate,
+          },
+        });
+      }
       
       return newTask;
     } catch (error) {
@@ -113,6 +127,7 @@ export function useTasks() {
     try {
       const updatedTasks = tasks.filter(task => task.id !== taskId);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTasks));
+      await notificationService.cancelNotification(taskId);
       setTasks(updatedTasks);
       
       return true;
@@ -164,6 +179,13 @@ export function useTasks() {
   };
 
   /**
+   * Busca uma tarefa pelo ID
+   */
+  const getTaskById = (taskId: string) => {
+    return tasks.find(task => task.id === taskId);
+  };
+
+  /**
    * Obtém estatísticas das tarefas
    */
   const getTaskStats = () => {
@@ -176,7 +198,7 @@ export function useTasks() {
       total,
       completed,
       pending,
-      completionRate: Math.round(completionRate * 10) / 10,
+      completionRate: Math.round(completionRate * 100) / 100,
     };
   };
 
@@ -188,8 +210,10 @@ export function useTasks() {
     updateTask,
     deleteTask,
     toggleTaskCompletion,
+    toggleTaskComplete: toggleTaskCompletion,
     clearAllTasks,
     loadTasks,
+    getTaskById,
     getTasksByCategory,
     getTasksByStatus,
     getTaskStats,

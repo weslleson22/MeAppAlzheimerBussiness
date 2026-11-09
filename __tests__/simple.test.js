@@ -1,6 +1,10 @@
 // Testes simples que funcionam sem dependências externas
 // Estes testes validam a lógica principal do aplicativo
 
+const describe = global.describe || (() => {});
+const beforeEach = global.beforeEach || (() => {});
+const test = global.test || (() => {});
+
 // Mock do AsyncStorage
 const mockAsyncStorage = {
   data: {},
@@ -53,7 +57,7 @@ describe('Storage Tests', () => {
 describe('User Logic Tests', () => {
   test('deve validar nome obrigatório', () => {
     const validateUserName = (name) => {
-      return name && name.trim().length > 0;
+      return Boolean(name && name.trim().length > 0);
     };
     
     if (validateUserName('') !== false) {
@@ -280,7 +284,7 @@ async function runAllTests() {
       
       // Testes de usuário
       if (suiteName === 'User Logic Tests') {
-        const validateUserName = (name) => name && name.trim().length > 0;
+        const validateUserName = (name) => Boolean(name && name.trim().length > 0);
         if (validateUserName('') === false) passedTests++;
         if (validateUserName('   ') === false) passedTests++;
         if (validateUserName('João Silva') === true) passedTests++;
@@ -361,9 +365,10 @@ async function runAllTests() {
 }
 
 // Exportar para execução
+if (typeof require !== 'undefined' && require.main === module) {
+  runAllTests();
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { runAllTests };
-} else {
-  // Executar testes se rodado diretamente
-  runAllTests();
 }

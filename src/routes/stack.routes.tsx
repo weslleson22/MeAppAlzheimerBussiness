@@ -18,6 +18,10 @@ const AppRoutes: React.FC = () => (
             getComponent={() => require('../screens/AppMenu/Home/WelcomeApp').WelcomeApp}
         />
         <stackRoutes.Screen 
+            name='WelcomeApp'
+            getComponent={() => require('../screens/AppMenu/Home/WelcomeApp').WelcomeApp}
+        />
+        <stackRoutes.Screen 
             name='UserIdentification'
             getComponent={() => require('../screens/AppTarefas/UserIdentification').UserIdentification}
         />
@@ -58,7 +62,15 @@ const AppRoutes: React.FC = () => (
             getComponent={() => require('../screens/AppEndereco/Points').TelaPoints}
         />
         <stackRoutes.Screen 
+            name='TelaPoints'
+            getComponent={() => require('../screens/AppEndereco/Points').TelaPoints}
+        />
+        <stackRoutes.Screen 
             name='Detail'
+            getComponent={() => require('../screens/AppEndereco/Detail').default}
+        />
+        <stackRoutes.Screen 
+            name='TelaDetail'
             getComponent={() => require('../screens/AppEndereco/Detail').default}
         />
         <stackRoutes.Screen 
@@ -90,10 +102,17 @@ const AppRoutes: React.FC = () => (
             getComponent={() => require('../screens/AppMenu/Settings/SettingsScreen').SettingsScreen} 
         />
         <stackRoutes.Screen 
+            name="UserSettings" 
+            getComponent={() => require('../screens/Settings/UserSettings').UserSettings} 
+        />
+        <stackRoutes.Screen 
+            name="Reports" 
+            getComponent={() => require('../screens/AppMenu/Reports/ReportsScreen').ReportsScreen} 
+        />
+        <stackRoutes.Screen 
             name="finish" 
             getComponent={() => require('../screens/Gamers/Quiz/src/screens/Finish').Finish} 
         />
-
         <stackRoutes.Screen 
             name="dashboard" 
             getComponent={() => require('../screens/AppMenu/Home/Dashboard').Dashboard} 

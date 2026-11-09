@@ -1,6 +1,4 @@
-const UserImg = require ('../../../assets/idoso.png');
-import AsyncStorange from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     Image,
     StyleSheet,
@@ -8,31 +6,26 @@ import {
     View
 } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-//import UserImg from '../assets/paulo.jpg';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
+import { useUser } from '../../hooks/useUser';
+
+const UserImg = require('../../../assets/idoso.png');
 
 export function Header() {
-    const [userName, setUserName] = useState<string>();
-
-    useEffect(() => {
-        async function loadStorangeUsername() {
-            const user = await AsyncStorange.getItem('@plantmanager:user');
-
-            setUserName(user || '')
-        }
-
-        loadStorangeUsername();
-    }, [])
+    const { user } = useUser();
 
     return(
         <View style={styles.container}>
             <View>
                 <Text style={styles.greeting}>Olá,</Text>
-                <Text style={styles.userName}>{userName}</Text>
+                <Text style={styles.userName}>{user?.name || 'Visitante'}</Text>
             </View>
 
-            <Image source={UserImg} style={styles.image}/>
+            <Image
+                source={user?.profilePhoto ? { uri: user.profilePhoto } : UserImg}
+                style={styles.image}
+            />
         </View>
     )
 }

@@ -17,11 +17,22 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 
+interface IBGEUF {
+  id: number;
+  sigla: string;
+  nome: string;
+}
+
+interface IBGECity {
+  id: number;
+  nome: string;
+}
+
 export function TelaEndereco() {
   const [uf, setUf] = useState("");
   const [city, setCity] = useState("");
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [states, setStates] = useState<IBGEUF[]>([]);
+  const [cities, setCities] = useState<IBGECity[]>([]);
   const [loadingStates, setLoadingStates] = useState(true);
   const [loadingCities, setLoadingCities] = useState(false);
 
@@ -33,10 +44,10 @@ export function TelaEndereco() {
 
   async function fetchStates() {
     try {
-      const response = await axios.get(
+      const response = await axios.get<IBGEUF[]>(
         "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
       );
-      setStates(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
+      setStates(response.data.sort((a: IBGEUF, b: IBGEUF) => a.nome.localeCompare(b.nome)));
     } catch (error) {
       console.error("Error fetching states:", error);
     } finally {
@@ -52,10 +63,10 @@ export function TelaEndereco() {
 
     try {
       setLoadingCities(true);
-      const response = await axios.get(
+      const response = await axios.get<IBGECity[]>(
         `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
       );
-      setCities(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
+      setCities(response.data.sort((a: IBGECity, b: IBGECity) => a.nome.localeCompare(b.nome)));
     } catch (error) {
       console.error("Error fetching cities:", error);
     } finally {
@@ -137,16 +148,17 @@ export function TelaEndereco() {
           </Picker>
         </View>
 
-        <RectButton
+        <TouchableOpacity
           style={[styles.button, !(uf && city) && styles.buttonDisabled]}
           onPress={handleNavigateMap}
-          enabled={!!uf && !!city}
+          disabled={!uf || !city}
+          activeOpacity={0.8}
         >
           <View style={styles.buttonIcon}>
             <Icon name="arrow-right" color={"#fff"} size={32} />
           </View>
           <Text style={styles.buttonText}>Buscar</Text>
-        </RectButton>
+        </TouchableOpacity>
       </View>
       </View>
     </KeyboardAvoidingView>
